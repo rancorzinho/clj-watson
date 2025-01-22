@@ -15,10 +15,11 @@
 
 (defmulti scan* (fn [{:keys [database-strategy]}] database-strategy))
 (defmethod scan* :github-advisory [{:keys [dependencies repositories]}]
-  (let [config (when-let [config-file (io/resource "clj-watson-config.edn")]
-                 (println (str "Loading config: " config-file))
+  (let [config-file (io/resource "clj-watson-config.edn")
+        config (when config-file 
                  (edn/read-string (slurp config-file)))
         allow-list (adapter.config/config->allow-config-map config)]
+    (println (str "Loading config: " config-file))
     (println config)
     (controller.gh.vulnerability/scan-dependencies dependencies repositories allow-list)))
 
