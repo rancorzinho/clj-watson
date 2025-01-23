@@ -14,7 +14,10 @@
    [clojure.tools.reader.edn :as edn]))
 
 (defmulti scan* (fn [{:keys [database-strategy]}] database-strategy))
+
 (defmethod scan* :github-advisory [{:keys [dependencies repositories]}]
+  (println "Starting scan using github-advisory database")
+  (println (io/resource "clj-watson-config.edn"))
   (let [config-file (io/resource "clj-watson-config.edn")
         config (when config-file 
                  (edn/read-string (slurp config-file)))
@@ -25,6 +28,7 @@
 
 (defmethod scan* :dependency-check [{:keys [dependency-check-properties clj-watson-properties
                                             dependencies repositories] :as opts}]
+  (println "Starting scan using dependency-check database")
   (let [{:keys [findings] :as result}
         (controller.dc.scanner/start! dependencies
                                       dependency-check-properties
